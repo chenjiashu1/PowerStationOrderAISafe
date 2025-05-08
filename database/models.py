@@ -47,6 +47,16 @@ class OrderOperationLog(Base):
     ai_remark = Column(Text)
     operation_time = Column(TIMESTAMP, default=func.current_timestamp())
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'order_no': self.order_no,
+            'operation_name': self.operation_name,
+            'operation_result': self.operation_result,
+            'operation_description': self.operation_description,
+            'ai_remark': self.ai_remark,
+            'operation_time': self.operation_time
+        }
 
 class PvStationDailyMonitor(Base):
     __tablename__ = 'pv_station_daily_monitor'
@@ -65,6 +75,22 @@ class PvStationDailyMonitor(Base):
     theoretical_power = Column(DECIMAL(10, 2), comment='理论发电量 (kWh)')
     system_efficiency = Column(DECIMAL(5, 2), comment='系统效率 (%) 75%~85%')
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'order_no': self.order_no,
+            'record_time': self.record_time,
+            'voltage': float(self.voltage) if self.voltage else None,
+            'current': float(self.current) if self.current else None,
+            'max_module_temp': float(self.max_module_temp) if self.max_module_temp else None,
+            'avg_module_temp': float(self.avg_module_temp) if self.avg_module_temp else None,
+            'avg_ambient_temp': float(self.avg_ambient_temp) if self.avg_ambient_temp else None,
+            'power_ratio': float(self.power_ratio) if self.power_ratio else None,
+            'work_hour_count': float(self.work_hour_count) if self.work_hour_count else None,
+            'power_generation': float(self.power_generation) if self.power_generation else None,
+            'theoretical_power': float(self.theoretical_power) if self.theoretical_power else None,
+            'system_efficiency': float(self.system_efficiency) if self.system_efficiency else None
+        }
 def PvStationDailyMonitor_to_string(order_monitor):
     """
     将单个 order_daily_monitor 对象/字典转为带中文备注的字符串

@@ -8,7 +8,7 @@ import re
 import threading
 
 
-def ai_smart_monitoring(order_no):
+def ai_smart_analysis(order_no):
     order_daily_monitors = find_pv_station_monitor_by_order_no(order_no);
     print(f"ai_smart_monitoring-order_daily_monitors: {order_daily_monitors}")
 
@@ -37,7 +37,7 @@ def ai_smart_monitoring(order_no):
     insert_order_operation_log(order_no, "智慧监控", "成功", "分析光伏电站日常运行数据", "正在生成报表并抄送邮件")
     threading.Thread(target=sendMarkdown, args=(order_no, smart_monitoring_md)).start()
 
-    return smart_monitoring_md
+    return "成功"
 
 
 def convertMarkdownToPdfAndSend(order_no, smart_monitoring_md):
