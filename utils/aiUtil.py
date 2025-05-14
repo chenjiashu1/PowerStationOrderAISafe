@@ -168,3 +168,55 @@ def call_deepseek(prompt):
     except Exception as e:
         messagebox.showerror("call_deepseek-模型调用失败", f"请检查网络1或 API Key：{str(e)}")
         return None
+def call_ocr(prompt,img_url):
+    completion = client.chat.completions.create(
+        model="qwen-vl-ocr-latest",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": img_url
+                    },
+                      # qwen-vl-ocr-latest支持在以下text字段中传入Prompt，若未传入，则会使用默认的Prompt：Please output only the text content from the image without any additional descriptions or formatting.
+                     # 如调用qwen-vl-ocr-1028，模型会使用固定Prompt：Read all the text in the image.不支持用户在text中传入自定义Prompt
+                    {"type": "text",
+                     "text": prompt},
+                ]
+            }
+        ])
+
+    print(f"============={completion.choices[0].message.content}")
+    print(f"============={completion}")
+
+def call_qwen_vl(prompt, image_urls):
+    print(f"call_qwen_vl-url=======: {image_urls}")
+    start_time = time.time()  # 记录开始时间
+    messages = [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": prompt},
+            *[{"type": "image_url", "image_url": {"url": url}} for url in image_urls]
+        ]
+    }]
+
+    try:
+        response = client.chat.completions.create(
+            model="qwen-vl-plus",
+            messages=messages,
+            response_format={"type": "json_object"},
+            temperature=0.7  # 控制输出随机性，0.7 为适中
+        )
+        end_time = time.time()  # 记录结束时间
+        print(f"call_qwen_vl耗时: {end_time - start_time} 秒")  # 输出耗时
+        print(f"call_qwen_vl-response=======: {response}")
+        try:
+            response_json = json.loads(response.choices[0].message.content)
+            return response_json
+        except json.JSONDecodeError as e:
+            messagebox.showerror("JSON 解析失败", f"无法解析返回内容为 JSON：{str(e)}")
+            return None
+    except Exception as e:
+        messagebox.showerror("call_qwen_vl模型调用失败", f"请检查网络1或 API Key：{str(e)}")
+        return None

@@ -4,7 +4,7 @@ from module.disaster_warn.ai_disaster_warn import weather_disaster_warn
 from module.power_station_order.power_station_order import find_order_web, find_order_list, find_order_operation_log, \
     find_pv_station_monitor_by_order_no_web
 from module.smart_monitoring.ai_smart_monitoring import ai_smart_analysis
-from module.work_inspect.ai_work_inspect import construction_work_inspect
+from module.work_inspect.ai_work_inspect import construction_work_inspect, test_Ocr
 from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # 全局启用跨域支持
@@ -45,6 +45,9 @@ def disaster_warn(order_no):
 def smart_analysis(order_no):
     return ai_smart_analysis(order_no)
 
+@app.route('/order/test')
+def testOcr():
+    return test_Ocr()
 
 
 if __name__ == '__main__':
