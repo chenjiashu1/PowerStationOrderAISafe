@@ -12,6 +12,8 @@ client = OpenAI(
     api_key=ALI_ACCESS_KEY,
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
+
+
 # 调用 qwen - vl - plus 模型（支持多图片输入）
 def call_qwen_vl(prompt, image_urls):
     print(f"call_qwen_vl-url=======: {image_urls}")
@@ -28,7 +30,7 @@ def call_qwen_vl(prompt, image_urls):
         response = client.chat.completions.create(
             model="qwen-vl-plus",
             messages=messages,
-            response_format= {"type": "json_object"},
+            response_format={"type": "json_object"},
             temperature=0.7  # 控制输出随机性，0.7 为适中
         )
         end_time = time.time()  # 记录结束时间
@@ -50,8 +52,8 @@ def sample_async_call_i2v():
     # you can get task status with the returned task id.
     rsp = VideoSynthesis.async_call(
         model='wanx2.1-i2v-turbo',
-                                    prompt='一只猫在草地上奔跑',
-                                    img_url='https://cdn.translate.alibaba.com/r/wanx-demo-1.png')
+        prompt='一只猫在草地上奔跑',
+        img_url='https://cdn.translate.alibaba.com/r/wanx-demo-1.png')
     print(rsp)
     if rsp.status_code == HTTPStatus.OK:
         print("task_id: %s" % rsp.output.task_id)
@@ -75,6 +77,8 @@ def sample_async_call_i2v():
     else:
         print('Failed, status_code: %s, code: %s, message: %s' %
               (rsp.status_code, rsp.code, rsp.message))
+
+
 def sample_call_i2v():
     # call sync api, will return the result
     print('please wait...')
@@ -88,15 +92,16 @@ def sample_call_i2v():
         print('Failed, status_code: %s, code: %s, message: %s' %
               (rsp.status_code, rsp.code, rsp.message))
 
-def call_wanx2(prompt,img_url):
+
+def call_wanx2(prompt, img_url):
     print(f"call_wanx2-start=======")
 
     start_time = time.time()  # 记录开始时间
 
     try:
         response = VideoSynthesis.call(model='wanx2.1-t2v-turbo',
-                                  prompt=prompt,
-                                  img_url=img_url)
+                                       prompt=prompt,
+                                       img_url=img_url)
         end_time = time.time()  # 记录结束时间
         print(f"call_wanx2 耗时: {end_time - start_time} 秒")  # 输出耗时花了84.99245738983154 秒才生成，生成出来的结果差强人意
         print(f"call_wanx2-response=======: {response}")
@@ -135,6 +140,7 @@ def call_wanx2(prompt,img_url):
 
 def call_qwen_plus(prompt):
     try:
+        print(f"call_qwen_plus-start")  # 输出耗时
         start_time = time.time()  # 记录开始时间
         completion = client.chat.completions.create(
             # 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
@@ -142,7 +148,7 @@ def call_qwen_plus(prompt):
             messages=[
                 {'role': 'system', 'content': 'You are a helpful assistant.'},
                 {'role': 'user', 'content': prompt}
-                ]
+            ]
         )
         end_time = time.time()  # 记录结束时间
         print(f"call_qwen_plus 耗时: {end_time - start_time} 秒")  # 输出耗时
@@ -151,6 +157,7 @@ def call_qwen_plus(prompt):
     except Exception as e:
         messagebox.showerror("call_qwen_plus模型调用失败", f"请检查网络1或 API Key：{str(e)}")
         return None
+
 
 def call_deepseek(prompt):
     try:
@@ -168,7 +175,9 @@ def call_deepseek(prompt):
     except Exception as e:
         messagebox.showerror("call_deepseek-模型调用失败", f"请检查网络1或 API Key：{str(e)}")
         return None
-def call_ocr(prompt,img_url):
+
+
+def call_ocr(prompt, img_url):
     completion = client.chat.completions.create(
         model="qwen-vl-ocr-latest",
         messages=[
@@ -179,8 +188,8 @@ def call_ocr(prompt,img_url):
                         "type": "image_url",
                         "image_url": img_url
                     },
-                      # qwen-vl-ocr-latest支持在以下text字段中传入Prompt，若未传入，则会使用默认的Prompt：Please output only the text content from the image without any additional descriptions or formatting.
-                     # 如调用qwen-vl-ocr-1028，模型会使用固定Prompt：Read all the text in the image.不支持用户在text中传入自定义Prompt
+                    # qwen-vl-ocr-latest支持在以下text字段中传入Prompt，若未传入，则会使用默认的Prompt：Please output only the text content from the image without any additional descriptions or formatting.
+                    # 如调用qwen-vl-ocr-1028，模型会使用固定Prompt：Read all the text in the image.不支持用户在text中传入自定义Prompt
                     {"type": "text",
                      "text": prompt},
                 ]
@@ -189,6 +198,34 @@ def call_ocr(prompt,img_url):
 
     print(f"============={completion.choices[0].message.content}")
     print(f"============={completion}")
+
+
+def call_qwen_vl_v2(prompt, image_urls):
+    print(f"call_qwen_vl-url=======: {image_urls}")
+    start_time = time.time()  # 记录开始时间
+    messages = [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": prompt},
+            *[{"type": "image_url", "image_url": {"url": url}} for url in image_urls]
+        ]
+    }]
+
+    try:
+        response = client.chat.completions.create(
+            model="qwen-vl-plus",
+            messages=messages,
+            response_format={"type": "text"},
+            temperature=0.7  # 控制输出随机性，0.7 为适中
+        )
+        end_time = time.time()  # 记录结束时间
+        print(f"call_qwen_vl耗时: {end_time - start_time} 秒")  # 输出耗时
+        print(f"call_qwen_vl-response=======: {response}")
+        return response.choices[0].message.content
+    except Exception as e:
+        messagebox.showerror("call_qwen_vl模型调用失败", f"请检查网络1或 API Key：{str(e)}")
+        return None
+
 
 def call_qwen_vl(prompt, image_urls):
     print(f"call_qwen_vl-url=======: {image_urls}")

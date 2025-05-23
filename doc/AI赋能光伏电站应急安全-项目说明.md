@@ -39,6 +39,8 @@
   * 智能运维分析系统
     * 使用智能监控系统实时监控光伏电站的运行参数，如电压、电流、温度等
     * 使用AI分析历史数据，识别异常模式，提前预警潜在故障和应急方案
+    * 样例数据：订单5和6
+
 
 ### 系统交互设计
 <p align="center">
@@ -98,11 +100,11 @@ CREATE TABLE `power_station_info` (
   `installation_county_code` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '县code',
   `max_support_wind_power` decimal(10,1) DEFAULT NULL COMMENT '最大支持的风力等级',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='电站信息表';
 
---- 操作日志表
+-- 操作日志表
 CREATE TABLE `order_operation_log` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
   `order_no` varchar(50) COLLATE utf8mb4_bin NOT NULL,
   `operation_name` varchar(100) COLLATE utf8mb4_bin NOT NULL,
   `operation_result` varchar(50) COLLATE utf8mb4_bin NOT NULL,
@@ -110,9 +112,9 @@ CREATE TABLE `order_operation_log` (
   `ai_remark` text COLLATE utf8mb4_bin,
   `operation_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='操作日志表';
 
---- 监控数据表
+-- 监控数据表
 CREATE TABLE `pv_station_daily_monitor` (
   `id` int NOT NULL AUTO_INCREMENT,
   `order_no` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '订单编号',
